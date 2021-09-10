@@ -14,24 +14,44 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 
 #define USERNAME "administrador"
-#define PASSWORD "123456"
+
+#define HIDE_LETTER(a) (a) + 0x50
+#define UNHIDE_STRING(str) \
+  do                       \
+  {                        \
+    char *ptr = str;       \
+    while (*ptr)           \
+      *ptr++ -= 0x50;      \
+  } while (0)
+#define HIDE_STRING(str) \
+  do                     \
+  {                      \
+    char *ptr = str;     \
+    while (*ptr)         \
+      *ptr++ += 0x50;    \
+  } while (0)
 
 
 int main(int argc, char *args[]){
+    char passwd[] = {HIDE_LETTER('x'), HIDE_LETTER('3'), HIDE_LETTER('d'), HIDE_LETTER('C'), HIDE_LETTER('U'), HIDE_LETTER('4'), '\0'};
 
     if (argc != 3){
         printf("Modo de uso:\n./login [user] [password]\n");
         return 2;
     }
 
-    if (strcmp(args[1], USERNAME) == 0 && strcmp(args[2], PASSWORD) == 0){
+    UNHIDE_STRING(passwd);
+
+    if (strcmp(args[1], USERNAME) == 0 && strcmp(args[2], passwd) == 0){
         printf("Acesso concedido\n");
         return 0;
     }
-    printf("Acesso negado\n");
+
+    HIDE_STRING(passwd);
 
     return 1;
 }
